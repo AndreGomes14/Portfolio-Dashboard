@@ -4,7 +4,7 @@ Development still in progress..
 
 Features:
 -> Authentication and authorization
--> User Management
+-> User Management 
 -> Role Management
 -> Portfolio Tracking
 -> Investment add and remove
