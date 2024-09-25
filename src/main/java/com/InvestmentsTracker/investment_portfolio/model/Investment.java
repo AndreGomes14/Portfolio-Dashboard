@@ -18,7 +18,7 @@ public abstract class Investment {
     private double buyPrice;
     private double units;
     private LocalDate date;
-
+    private int riskLevel;
     @Transient
     private double amountInvested;
 
