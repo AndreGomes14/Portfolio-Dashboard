@@ -1,5 +1,6 @@
 package com.InvestmentsTracker.investment_portfolio.model;
 
+import jakarta.persistence.DiscriminatorValue;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 @Setter
 @Slf4j
-public class SavingsAndDeposits extends Investment{
+@DiscriminatorValue("SAVINGS")
+public class Savings extends Investment{
 
     Double totalDeposit;
     String description;
@@ -16,4 +18,10 @@ public class SavingsAndDeposits extends Investment{
     public double getCurrentMarketPrice() {
         return 0;
     }
+
+    @Override
+    public String getInvestmentType() {
+        return "SAVINGS";
+    }
+
 }

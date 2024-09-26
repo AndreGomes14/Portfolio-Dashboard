@@ -13,5 +13,7 @@ public class InvestmentDTO {
     private double amountInvested;
     private double currentValue;
     private double profitOrLoss;
+    private int quantity;
+    private double purchasePrice;
     // Add other common fields as needed
 }

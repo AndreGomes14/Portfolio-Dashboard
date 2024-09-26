@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+</head>
+<body>
+<h1>Bem-vindo, <span th:text="${#authentication.principal.name}">Usuário</span>!</h1>
+
+<a th:href="@{/logout}">Logout</a>
+
+<!-- Conteúdo do Dashboard -->
+<!-- Adicione aqui as funcionalidades de gerenciamento de portfólios e investimentos -->
+</body>
+</html>

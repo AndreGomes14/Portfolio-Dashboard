@@ -1,121 +1,79 @@
 package com.InvestmentsTracker.investment_portfolio.service;
 
-import com.InvestmentsTracker.investment_portfolio.dto.InvestmentDTO;
-import com.InvestmentsTracker.investment_portfolio.model.*;
-import com.InvestmentsTracker.investment_portfolio.repository.*;
+import com.InvestmentsTracker.investment_portfolio.model.Investment;
+import com.InvestmentsTracker.investment_portfolio.repository.InvestmentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
+/**
+ * Implementação do InvestmentService que gerencia operações gerais de Investimentos.
+ */
 @Service
+@Slf4j
 public class InvestmentServiceImpl implements InvestmentService {
 
-    @Autowired
-    private InvestmentRepository investmentRepository;
+    private final InvestmentRepository investmentRepository;
 
     @Autowired
-    private PortfolioRepository portfolioRepository;
-
-    @Override
-    public List<InvestmentDTO> getInvestmentsByPortfolioId(Long portfolioId) {
-        List<Investment> investments = investmentRepository.findByPortfolioId(portfolioId);
-        return convertToDTOList(investments);
+    public InvestmentServiceImpl(InvestmentRepository investmentRepository) {
+        this.investmentRepository = investmentRepository;
     }
 
     @Override
-    public InvestmentDTO getInvestmentById(Long investmentId) {
-        Investment investment = investmentRepository.findById(investmentId)
-                .orElseThrow(() -> new NoSuchElementException("Investment not found"));
-        return convertToDTO(investment);
-    }
-
-    @Override
-    @Transactional
-    public InvestmentDTO createInvestment(Long portfolioId, InvestmentDTO investmentDTO) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId)
-                .orElseThrow(() -> new NoSuchElementException("Portfolio not found"));
-
-        Investment investment = convertToEntity(investmentDTO);
-        investment.setPortfolio(portfolio);
-
+    public Investment addInvestment(Investment investment) {
         Investment savedInvestment = investmentRepository.save(investment);
-        return convertToDTO(savedInvestment);
+        log.info("Novo investimento adicionado: {}", savedInvestment);
+        return savedInvestment;
     }
 
     @Override
-    @Transactional
-    public InvestmentDTO updateInvestment(Long investmentId, InvestmentDTO investmentDTO) {
-        Investment existingInvestment = investmentRepository.findById(investmentId)
-                .orElseThrow(() -> new NoSuchElementException("Investment not found"));
-
-        updateEntityFromDTO(existingInvestment, investmentDTO);
-        Investment updatedInvestment = investmentRepository.save(existingInvestment);
-        return convertToDTO(updatedInvestment);
+    public Investment updateInvestment(Investment investment) {
+        if (!investmentRepository.existsById(investment.getId())) {
+            log.warn("Tentativa de atualizar investimento inexistente: ID {}", investment.getId());
+            throw new IllegalArgumentException("Investimento não encontrado com ID: " + investment.getId());
+        }
+        Investment updatedInvestment = investmentRepository.save(investment);
+        log.info("Investimento atualizado: {}", updatedInvestment);
+        return updatedInvestment;
     }
 
     @Override
-    @Transactional
-    public void deleteInvestment(Long investmentId) {
+    public void removeInvestment(Long investmentId) {
         if (!investmentRepository.existsById(investmentId)) {
-            throw new NoSuchElementException("Investment not found");
+            log.warn("Tentativa de remover investimento inexistente: ID {}", investmentId);
+            throw new IllegalArgumentException("Investimento não encontrado com ID: " + investmentId);
         }
         investmentRepository.deleteById(investmentId);
+        log.info("Investimento removido: ID {}", investmentId);
     }
 
-    // Helper methods to convert between entity and DTO
-    private InvestmentDTO convertToDTO(Investment investment) {
-        InvestmentDTO dto = new InvestmentDTO();
-        dto.setId(investment.getId());
-        dto.setName(investment.getName());
-        dto.setType(investment.getClass().getSimpleName());
-        dto.setAmountInvested(investment.getAmountInvested());
-        dto.setCurrentValue(investment.getCurrentValue());
-
-        double profitOrLoss = investment.getCurrentValue() - investment.getAmountInvested();
-        dto.setProfitOrLoss(profitOrLoss);
-
-        return dto;
-    }
-
-    private List<InvestmentDTO> convertToDTOList(List<Investment> investments) {
-        List<InvestmentDTO> dtos = new ArrayList<>();
-        for (Investment investment : investments) {
-            dtos.add(convertToDTO(investment));
+    @Override
+    public Investment getInvestmentById(Long investmentId) {
+        Optional<Investment> investmentOpt = investmentRepository.findById(investmentId);
+        if (investmentOpt.isPresent()) {
+            log.info("Investimento recuperado: {}", investmentOpt.get());
+            return investmentOpt.get();
+        } else {
+            log.warn("Investimento não encontrado: ID {}", investmentId);
+            throw new IllegalArgumentException("Investimento não encontrado com ID: " + investmentId);
         }
-        return dtos;
     }
 
-    private Investment convertToEntity(InvestmentDTO dto) {
-        Investment investment;
-        switch (dto.getType()) {
-            case "Crypto":
-                investment = new Crypto();
-                break;
-            case "Stock":
-                investment = new Stock();
-                break;
-            case "Etf":
-                investment = new Etf();
-                break;
-            case "SavingsAndDeposits":
-                investment = new SavingsAndDeposits();
-                break;
-            case "Other":
-                investment = new Other();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid investment type");
-        }
-        updateEntityFromDTO(investment, dto);
-        return investment;
+    @Override
+    public List<Investment> getAllInvestmentsByPortfolio(Long portfolioId) {
+        List<Investment> investments = investmentRepository.findByPortfolioId(portfolioId);
+        log.info("Recuperados {} investimentos para o portfólio ID {}", investments.size(), portfolioId);
+        return investments;
     }
 
-    private void updateEntityFromDTO(Investment investment, InvestmentDTO dto) {
-        investment.setName(dto.getName());
-        investment.setAmountInvested(dto.getAmountInvested());
-        investment.setCurrentValue(dto.getCurrentValue());
-        // Update other fields as necessary
+    @Override
+    public List<Investment> getAllInvestmentsByUser(Long userId) {
+        List<Investment> investments = investmentRepository.findByPortfolioUserId(userId);
+        log.info("Recuperados {} investimentos para o usuário ID {}", investments.size(), userId);
+        return investments;
     }
 }

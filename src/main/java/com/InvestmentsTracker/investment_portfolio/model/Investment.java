@@ -10,13 +10,14 @@ import java.time.LocalDate;
 @Setter
 @Entity // Make sure it's marked as a JPA entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "investment_type")
 public abstract class Investment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String investmentType;
     private double buyPrice;
-    private double units;
+    private int units;
     private LocalDate date;
     private int riskLevel;
     @Transient
@@ -41,10 +42,12 @@ public abstract class Investment {
         return getCurrentMarketPrice();
     }
 
+    @Transient
+    public abstract String getInvestmentType();
     @Override
     public String toString() {
         return "Investment{" +
-                "name='" + name + '\'' +
+                "name='" + investmentType + '\'' +
                 ", buyPrice=" + buyPrice +
                 ", units=" + units +
                 '}';

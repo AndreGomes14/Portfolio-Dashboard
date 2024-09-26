@@ -22,11 +22,12 @@ public class Portfolio {
     private Long id;
 
     private double totalValue = calculateTotalValue();
+    private String name;
 
     // Constructor
-    public Portfolio(User user) {
-        this.user = user;
+    public Portfolio() {
         this.investments = new ArrayList<>();
+        this.name = name;
     }
     public void addInvestment(Investment investment) {
         investments.add(investment);
@@ -42,10 +43,11 @@ public class Portfolio {
         return investments.stream().mapToDouble(Investment::calculateTotalValue).sum();
     }
     public void printPortfolioSummary() {
-        System.out.println("Portfolio of " + user + ":");
+        System.out.println("Portfolio of " + user.getUsername() + ":");
         for (Investment investment : investments) {
-            System.out.println(investment.getName() + ": " + investment.calculateTotalValue());
+            System.out.println(investment.getInvestmentType() + ": " + investment.calculateTotalValue());
         }
         System.out.println("Total Portfolio Value: " + calculateTotalValue());
     }
+
 }

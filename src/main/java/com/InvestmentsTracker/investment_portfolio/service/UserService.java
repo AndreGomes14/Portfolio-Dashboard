@@ -1,59 +1,117 @@
 package com.InvestmentsTracker.investment_portfolio.service;
 
-import com.InvestmentsTracker.investment_portfolio.model.User;
-import com.InvestmentsTracker.investment_portfolio.model.Role;
-import com.InvestmentsTracker.investment_portfolio.repository.UserRepository;
-import com.InvestmentsTracker.investment_portfolio.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import com.InvestmentsTracker.investment_portfolio.dto.AuthResponse;
+import com.InvestmentsTracker.investment_portfolio.dto.LoginRequest;
+import com.InvestmentsTracker.investment_portfolio.dto.RegisterRequest;
+import com.InvestmentsTracker.investment_portfolio.exception.PortfolioNotFoundException;
+import com.InvestmentsTracker.investment_portfolio.exception.UserNotFoundException;
+import com.InvestmentsTracker.investment_portfolio.model.Investment;
+import com.InvestmentsTracker.investment_portfolio.model.Portfolio;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-@Service
-public class UserService implements UserDetailsService {
+/**
+ * Interface para serviços de domínio que gerenciam operações relacionadas a Users, Portfolios e Investments.
+ */
+public interface UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    /**
+     * Registra um novo usuário.
+     *
+     * @param registerRequest Dados de registro do usuário.
+     * @return AuthResponse contendo o token JWT.
+     */
+    AuthResponse registerUser(RegisterRequest registerRequest);
 
-    @Autowired
-    private RoleRepository roleRepository;
+    /**
+     * Autentica um usuário e retorna um token JWT.
+     *
+     * @param loginRequest Dados de login do usuário.
+     * @return AuthResponse contendo o token JWT.
+     */
+    AuthResponse authenticateUser(LoginRequest loginRequest);
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    /**
+     * Exclui um usuário existente.
+     *
+     * @param userId ID do usuário a ser excluído.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     */
+    void deleteUser(Long userId) throws UserNotFoundException;
 
-    // Method for registering a new user
-    public void registerUser(User user) {
-        // Check if the user already exists
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username already taken");
-        }
+    /**
+     * Cria um novo portfólio para um usuário específico.
+     *
+     * @param userId ID do usuário.
+     * @param portfolio Instância de Portfolio a ser criada.
+     * @return Portfolio criado.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     */
+    Portfolio createPortfolio(Long userId, Portfolio portfolio) throws UserNotFoundException;
 
-        // Fetch the default role (e.g., "ROLE_USER")
-        Role userRole = roleRepository.findByName("ROLE_USER");
-        if (userRole == null) {
-            // Optionally, create the role if it doesn't exist
-            userRole = new Role("ROLE_USER");
-            roleRepository.save(userRole);
-        }
+    /**
+     * Exclui um portfólio específico de um usuário.
+     *
+     * @param userId ID do usuário.
+     * @param portfolioId ID do portfólio a ser excluído.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     * @throws PortfolioNotFoundException Se o portfólio não for encontrado.
+     */
+    void deletePortfolio(Long userId, Long portfolioId) throws UserNotFoundException, PortfolioNotFoundException;
 
-        // Assign the role to the user
-        user.setRoles(Collections.singleton(userRole));
+    /**
+     * Adiciona um investimento a um portfólio específico de um usuário.
+     *
+     * @param userId ID do usuário.
+     * @param portfolioId ID do portfólio.
+     * @param investment Instância de Investment a ser adicionada.
+     * @return Investment adicionado.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     * @throws PortfolioNotFoundException Se o portfólio não for encontrado.
+     */
+    Investment addInvestmentToPortfolio(Long userId, Long portfolioId, Investment investment) throws UserNotFoundException, PortfolioNotFoundException;
 
-        // Encode the password
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+    /**
+     * Atualiza um investimento existente em um portfólio de um usuário.
+     *
+     * @param userId ID do usuário.
+     * @param portfolioId ID do portfólio.
+     * @param investment Instância de Investment com os dados atualizados.
+     * @return Investment atualizado.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     * @throws PortfolioNotFoundException Se o portfólio não for encontrado.
+     */
+    Investment updateInvestment(Long userId, Long portfolioId, Investment investment) throws UserNotFoundException, PortfolioNotFoundException;
 
-        // Save the user
-        userRepository.save(user);
-    }
+    /**
+     * Remove um investimento específico de um portfólio de um usuário.
+     *
+     * @param userId ID do usuário.
+     * @param portfolioId ID do portfólio.
+     * @param investmentId ID do investimento a ser removido.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     * @throws PortfolioNotFoundException Se o portfólio não for encontrado.
+     */
+    void removeInvestment(Long userId, Long portfolioId, Long investmentId) throws UserNotFoundException, PortfolioNotFoundException;
 
-    // Implementing the loadUserByUsername method required by UserDetailsService
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Fetch the user from the database
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
+    /**
+     * Recupera todos os portfólios de um usuário.
+     *
+     * @param userId ID do usuário.
+     * @return Lista de portfólios.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     */
+    Portfolio getPortfolioByUser(Long userId) throws UserNotFoundException;
+
+    /**
+     * Recupera todos os investimentos de um portfólio específico de um usuário.
+     *
+     * @param userId ID do usuário.
+     * @param portfolioId ID do portfólio.
+     * @return Lista de investimentos.
+     * @throws UserNotFoundException Se o usuário não for encontrado.
+     * @throws PortfolioNotFoundException Se o portfólio não for encontrado.
+     */
+    List<Investment> getAllInvestmentsByPortfolio(Long userId, Long portfolioId) throws UserNotFoundException, PortfolioNotFoundException;
 }
