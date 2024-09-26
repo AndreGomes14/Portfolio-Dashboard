@@ -2,7 +2,7 @@ package com.InvestmentsTracker.investment_portfolio.controller;
 
 import com.InvestmentsTracker.investment_portfolio.exception.StockPriceRetrievalException;
 import com.InvestmentsTracker.investment_portfolio.model.Stock;
-import com.InvestmentsTracker.investment_portfolio.service.StockInvestmentService;
+import com.InvestmentsTracker.investment_portfolio.service.stock.StockInvestmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

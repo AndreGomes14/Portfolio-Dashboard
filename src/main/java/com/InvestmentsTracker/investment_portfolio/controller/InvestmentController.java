@@ -2,7 +2,7 @@
 package com.InvestmentsTracker.investment_portfolio.controller;
 
 import com.InvestmentsTracker.investment_portfolio.model.Investment;
-import com.InvestmentsTracker.investment_portfolio.service.InvestmentService;
+import com.InvestmentsTracker.investment_portfolio.service.investment.InvestmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

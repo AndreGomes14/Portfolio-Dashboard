@@ -2,7 +2,7 @@ package com.InvestmentsTracker.investment_portfolio.controller;
 
 import com.InvestmentsTracker.investment_portfolio.exception.EtfPriceRetrievalException;
 import com.InvestmentsTracker.investment_portfolio.model.Etf;
-import com.InvestmentsTracker.investment_portfolio.service.EtfInvestmentService;
+import com.InvestmentsTracker.investment_portfolio.service.etf.EtfInvestmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

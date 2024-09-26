@@ -4,7 +4,7 @@ package com.InvestmentsTracker.investment_portfolio.controller;
 import com.InvestmentsTracker.investment_portfolio.dto.RegisterRequest;
 import com.InvestmentsTracker.investment_portfolio.exception.DuplicateUserException;
 import com.InvestmentsTracker.investment_portfolio.exception.InvalidInputException;
-import com.InvestmentsTracker.investment_portfolio.service.UserService;
+import com.InvestmentsTracker.investment_portfolio.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

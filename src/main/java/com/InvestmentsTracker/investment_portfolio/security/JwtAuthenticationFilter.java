@@ -1,14 +1,13 @@
 // src/main/java/com/InvestmentsTracker/investment_portfolio/security/JwtAuthenticationFilter.java
 package com.InvestmentsTracker.investment_portfolio.security;
 
-import com.InvestmentsTracker.investment_portfolio.service.CustomUserDetailsService;
+import com.InvestmentsTracker.investment_portfolio.service.user.CustomUserDetailsService;
 import com.InvestmentsTracker.investment_portfolio.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

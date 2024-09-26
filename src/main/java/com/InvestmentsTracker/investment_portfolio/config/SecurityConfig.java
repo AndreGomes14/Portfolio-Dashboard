@@ -2,7 +2,7 @@ package com.InvestmentsTracker.investment_portfolio.config;
 
 import com.InvestmentsTracker.investment_portfolio.security.JwtAuthenticationEntryPoint;
 import com.InvestmentsTracker.investment_portfolio.security.JwtAuthenticationFilter;
-import com.InvestmentsTracker.investment_portfolio.service.CustomUserDetailsService;
+import com.InvestmentsTracker.investment_portfolio.service.user.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -3,7 +3,7 @@ package com.InvestmentsTracker.investment_portfolio.controller;
 import com.InvestmentsTracker.investment_portfolio.dto.PortfolioDTO;
 import com.InvestmentsTracker.investment_portfolio.exception.InvalidInputException;
 import com.InvestmentsTracker.investment_portfolio.exception.ResourceNotFoundException;
-import com.InvestmentsTracker.investment_portfolio.service.PortfolioService;
+import com.InvestmentsTracker.investment_portfolio.service.portfolio.PortfolioService;
 import com.InvestmentsTracker.investment_portfolio.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
