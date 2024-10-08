@@ -8,20 +8,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 @Getter
 public class UserPrincipal implements UserDetails {
 
-    private Long id;
-    private String name;
-    private String email;
+    private final UUID id;
+    private final String name;
+    private final String email;
 
     @JsonIgnore
     private String password;
 
-    private Collection<? extends GrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
 
-    private UserPrincipal(Long id, String name, String email, String password,
+    private UserPrincipal(UUID id, String name, String email, String password,
                           Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.name = name;

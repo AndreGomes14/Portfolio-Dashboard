@@ -1,13 +1,17 @@
 package com.InvestmentsTracker.investment_portfolio.service.savings;
 
 import com.InvestmentsTracker.investment_portfolio.exception.DepositPriceRetrievalException;
+import com.InvestmentsTracker.investment_portfolio.exception.InvestmentException;
 import com.InvestmentsTracker.investment_portfolio.model.Savings;
+import com.InvestmentsTracker.investment_portfolio.repository.InvestmentRepository;
 import com.InvestmentsTracker.investment_portfolio.repository.SavingsRepository;
+import com.InvestmentsTracker.investment_portfolio.service.savings.SavingsService; // Certifique-se de que este serviço está corretamente implementado
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementação do serviço específico para investimentos em Savings (Depósitos).
@@ -16,12 +20,12 @@ import java.util.List;
 @Slf4j
 public class SavingsInvestmentServiceImpl implements SavingsInvestmentService {
 
-    private final SavingsService depositService;
+    private final SavingsService savingsService;
     private final SavingsRepository savingsRepository;
 
     @Autowired
-    public SavingsInvestmentServiceImpl(SavingsService depositService, SavingsRepository savingsRepository) {
-        this.depositService = depositService;
+    public SavingsInvestmentServiceImpl(SavingsService savingsService, SavingsRepository savingsRepository) {
+        this.savingsService = savingsService;
         this.savingsRepository = savingsRepository;
     }
 
@@ -33,14 +37,19 @@ public class SavingsInvestmentServiceImpl implements SavingsInvestmentService {
      * @throws DepositPriceRetrievalException Se ocorrer um erro ao atualizar o valor.
      */
     @Override
-    public void updateValue(Long investmentId, double newValue) throws DepositPriceRetrievalException {
+    public void updateValue(UUID investmentId, double newValue) throws DepositPriceRetrievalException {
         Savings savings = savingsRepository.findById(investmentId)
                 .orElseThrow(() -> new DepositPriceRetrievalException("Savings não encontrado com ID: " + investmentId));
 
-        depositService.updateSavingsValue(savings, newValue);
-        savingsRepository.save(savings);
+        try {
+            savingsService.updateSavingsValue(savings, newValue);
+            savingsRepository.save(savings);
 
-        log.info("Savings '{}' (ID: {}) atualizado com novo valor: {} EUR", savings.getDescription(), investmentId, newValue);
+            log.info("Savings '{}' (ID: {}) atualizado com novo valor: {} EUR", savings.getDescription(), investmentId, newValue);
+        } catch (Exception e) {
+            log.error("Erro ao atualizar Savings ID {}: {}", investmentId, e.getMessage(), e);
+            throw new DepositPriceRetrievalException("Erro ao atualizar o valor do Savings com ID: " + investmentId, e);
+        }
     }
 
     /**
@@ -51,7 +60,7 @@ public class SavingsInvestmentServiceImpl implements SavingsInvestmentService {
      * @throws DepositPriceRetrievalException Se ocorrer um erro ao atualizar os valores.
      */
     @Override
-    public void updateAllValues(Long portfolioId, double newValue) throws DepositPriceRetrievalException {
+    public void updateAllValues(UUID portfolioId, double newValue) throws DepositPriceRetrievalException {
         List<Savings> savingsList = savingsRepository.findByPortfolioId(portfolioId);
         for (Savings savings : savingsList) {
             try {
@@ -66,19 +75,19 @@ public class SavingsInvestmentServiceImpl implements SavingsInvestmentService {
     }
 
     /**
-     * Recupera o valor atual de um investimento em Savings.
+     * Calcula e retorna o valor atual de um investimento em Savings.
      *
      * @param investmentId ID do investimento em Savings.
      * @return Valor atual em EUR.
-     * @throws DepositPriceRetrievalException Se ocorrer um erro ao recuperar o valor.
+     * @throws InvestmentException Se ocorrer um erro ao recuperar o valor.
      */
     @Override
-    public double getCurrentValue(Long investmentId) throws DepositPriceRetrievalException {
+    public double getCurrentValue(UUID investmentId) throws InvestmentException {
         Savings savings = savingsRepository.findById(investmentId)
-                .orElseThrow(() -> new DepositPriceRetrievalException("Savings não encontrado com ID: " + investmentId));
+                .orElseThrow(() -> new InvestmentException("Savings não encontrada com ID: " + investmentId));
 
         double currentValue = savings.getCurrentValue();
-        log.info("Valor atual para Savings '{}' (ID: {}): {} EUR", savings.getDescription(), investmentId, currentValue);
+        log.info("Valor atual para Savings (ID: {}): {} EUR", investmentId, currentValue);
         return currentValue;
     }
 
@@ -89,12 +98,18 @@ public class SavingsInvestmentServiceImpl implements SavingsInvestmentService {
      * @return Lista de investimentos em Savings.
      */
     @Override
-    public List<Savings> getAllDepositsByUser(Long userId) {
+    public List<Savings> getAllDepositsByUser(UUID userId) {
         List<Savings> savingsList = savingsRepository.findByPortfolioUserId(userId);
         log.info("Encontradas {} Savings para o usuário ID: {}", savingsList.size(), userId);
         return savingsList;
     }
 
+    /**
+     * Adiciona um novo investimento em Savings.
+     *
+     * @param savings Instância de Savings a ser adicionada.
+     * @return Savings criado.
+     */
     @Override
     public Savings addSavings(Savings savings) {
         Savings savedSavings = savingsRepository.save(savings);
@@ -109,11 +124,18 @@ public class SavingsInvestmentServiceImpl implements SavingsInvestmentService {
      * @throws DepositPriceRetrievalException Se ocorrer um erro ao remover o Savings.
      */
     @Override
-    public void removeSavings(Long investmentId) throws DepositPriceRetrievalException {
+    public void removeSavings(UUID investmentId) throws DepositPriceRetrievalException {
         Savings savings = savingsRepository.findById(investmentId)
                 .orElseThrow(() -> new DepositPriceRetrievalException("Savings não encontrado com ID: " + investmentId));
 
-        savingsRepository.delete(savings);
-        log.info("Savings removido: '{}', ID: {}", savings.getDescription(), investmentId);
+        try {
+            savingsRepository.delete(savings);
+            log.info("Savings removido: '{}', ID: {}", savings.getDescription(), investmentId);
+        } catch (Exception e) {
+            log.error("Erro ao remover Savings ID {}: {}", investmentId, e.getMessage(), e);
+            throw new DepositPriceRetrievalException("Erro ao remover o Savings com ID: " + investmentId, e);
+        }
     }
+
+
 }

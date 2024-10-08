@@ -1,59 +1,62 @@
 package com.InvestmentsTracker.investment_portfolio.service.investment;
 
+import com.InvestmentsTracker.investment_portfolio.dto.investment.InvestmentRequestDTO;
+import com.InvestmentsTracker.investment_portfolio.exception.InvestmentException;
 import com.InvestmentsTracker.investment_portfolio.model.Investment;
 
 import java.util.List;
+import java.util.UUID;
 
-/**
- * Interface para serviços de domínio que gerenciam operações gerais de Investimentos.
- */
 public interface InvestmentService {
+
+    /**
+     * Atualiza o preço de um investimento específico.
+     *
+     * @param investmentId ID do investimento.
+     * @return Preço atualizado.
+     * @throws InvestmentException Se ocorrer um erro ao atualizar o preço.
+     */
+    double updatePrice(UUID investmentId) throws InvestmentException;
+
+    /**
+     * Atualiza os preços de todos os investimentos no portfólio do usuário.
+     *
+     * @param portfolioId ID do portfólio.
+     * @throws InvestmentException Se ocorrer um erro ao atualizar os preços.
+     */
+    void updateAllPrices(UUID portfolioId) throws InvestmentException;
+
+    /**
+     * Calcula o valor atual de um investimento.
+     *
+     * @param investmentId ID do investimento.
+     * @return Valor atual.
+     * @throws InvestmentException Se ocorrer um erro ao calcular o valor.
+     */
+    double getCurrentValue(UUID investmentId) throws InvestmentException;
+
+    /**
+     * Recupera todos os investimentos associados a um usuário.
+     *
+     * @param userId ID do usuário.
+     * @return Lista de investimentos.
+     */
+    List<Investment> getAllInvestmentsByUser(UUID userId);
 
     /**
      * Adiciona um novo investimento.
      *
-     * @param investment Instância de Investment a ser adicionada.
-     * @return Investment criado.
+     * @param investmentRequestDTO DTO contendo os dados do investimento.
+     * @return Investimento adicionado.
+     * @throws InvestmentException Se ocorrer um erro ao adicionar o investimento.
      */
-    Investment addInvestment(Investment investment);
-
-    /**
-     * Atualiza um investimento existente.
-     *
-     * @param investment Instância de Investment a ser atualizada.
-     * @return Investment atualizado.
-     */
-    Investment updateInvestment(Investment investment);
+    Investment addInvestment(InvestmentRequestDTO investmentRequestDTO) throws InvestmentException;
 
     /**
      * Remove um investimento específico.
      *
      * @param investmentId ID do investimento a ser removido.
+     * @throws InvestmentException Se ocorrer um erro ao remover o investimento.
      */
-    void removeInvestment(Long investmentId);
-
-    /**
-     * Recupera um investimento por ID.
-     *
-     * @param investmentId ID do investimento.
-     * @return Investment encontrado.
-     */
-    Investment getInvestmentById(Long investmentId);
-
-    /**
-     * Recupera todos os investimentos de um portfólio específico.
-     *
-     * @param portfolioId ID do portfólio.
-     * @return Lista de investimentos.
-     */
-    List<Investment> getAllInvestmentsByPortfolio(Long portfolioId);
-
-    /**
-     * Recupera todos os investimentos de um usuário específico.
-     *
-     * @param userId ID do usuário.
-     * @return Lista de investimentos.
-     */
-    List<Investment> getAllInvestmentsByUser(Long userId);
-
+    void removeInvestment(UUID investmentId) throws InvestmentException;
 }

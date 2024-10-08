@@ -18,7 +18,42 @@ public class GlobalExceptionHandler {
         ErrorResponse errorDetails = new ErrorResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(CryptoPriceRetrievalException.class)
+    public ResponseEntity<?> handleCryptoPriceRetrievalException(CryptoPriceRetrievalException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
 
+    @ExceptionHandler(InvestmentException.class)
+    public ResponseEntity<?> handleInvestmentException(InvestmentException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PortfolioNotFoundException.class)
+    public ResponseEntity<?> handlePortfolioNotFoundException(PortfolioNotFoundException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EtfPriceRetrievalException.class)
+    public ResponseEntity<?> handleEtfPriceRetrievalException(EtfPriceRetrievalException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    // Handler para outras exceções
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleGlobalException(Exception ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails("Erro interno do servidor.", request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     @ExceptionHandler(UnauthorizedAccessException.class)
     public final ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException ex, WebRequest request) {
         ErrorResponse errorDetails = new ErrorResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());

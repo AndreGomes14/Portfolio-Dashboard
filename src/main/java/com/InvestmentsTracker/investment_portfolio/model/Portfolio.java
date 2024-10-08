@@ -4,25 +4,33 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Slf4j
+@Entity
 public class Portfolio {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Investment> investments;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     private double totalValue = calculateTotalValue();
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
+
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Investment> investments;
 
     // Constructor
     public Portfolio() {

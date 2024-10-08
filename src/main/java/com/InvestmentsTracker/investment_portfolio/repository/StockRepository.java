@@ -7,12 +7,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repositório para operações CRUD na entidade Stock.
  */
 @Repository
-public interface StockRepository extends JpaRepository<Stock, Long> {
+public interface StockRepository extends JpaRepository<Stock, UUID> {
 
     /**
      * Busca um Stock pelo ticker.
@@ -28,7 +29,7 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
      * @param portfolioId ID do portfólio.
      * @return Lista de Stocks.
      */
-    List<Stock> findByPortfolioId(Long portfolioId);
+    List<Stock> findByPortfolioId(UUID portfolioId);
 
     /**
      * Busca todos os Stocks associados a um usuário específico através do userId.
@@ -36,5 +37,5 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
      * @param userId ID do usuário.
      * @return Lista de Stocks.
      */
-    List<Stock> findByPortfolioUserId(Long userId);
+    List<Stock> findByPortfolioUserId(UUID userId);
 }

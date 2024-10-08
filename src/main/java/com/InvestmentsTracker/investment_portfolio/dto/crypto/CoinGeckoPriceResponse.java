@@ -1,5 +1,5 @@
 // src/main/java/com/InvestmentsTracker/investment_portfolio/dto/CoinGeckoPriceResponse.java
-package com.InvestmentsTracker.investment_portfolio.dto;
+package com.InvestmentsTracker.investment_portfolio.dto.crypto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

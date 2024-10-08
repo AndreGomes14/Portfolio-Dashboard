@@ -1,24 +1,47 @@
 package com.InvestmentsTracker.investment_portfolio.model;
 
-import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+
+import java.util.UUID;
 
 @Getter
 @Setter
-@Slf4j
-@DiscriminatorValue("OTHER")
-public class Other extends Investment{
+@Entity
+@Table(name = "others")
+public class Other extends Investment {
 
-    String description;
+    @Column(name = "description", nullable = false)
+    @NotBlank(message = "Descrição não pode ser vazia.")
+    private String description;
+
+    @Column(name = "category", nullable = false)
+    @NotBlank(message = "Categoria não pode ser vazia.")
+    private String category;
+
     @Override
     public double getCurrentMarketPrice() {
-        return 0;
+        // Implementação específica para outros tipos de investimentos
+        return getCurrentValue();
     }
 
     @Override
     public String getInvestmentType() {
-        return "OTHER";
+        return "Other";
+    }
+
+    @Override
+    public String toString() {
+        return "Other{" +
+                "id=" + getId() +
+                ", description='" + description + '\'' +
+                ", category='" + category + '\'' +
+                ", buyPrice=" + getBuyPrice() +
+                ", date=" + getDate() +
+                ", riskLevel=" + getRiskLevel() +
+                ", currentValue=" + getCurrentValue() +
+                '}';
     }
 }

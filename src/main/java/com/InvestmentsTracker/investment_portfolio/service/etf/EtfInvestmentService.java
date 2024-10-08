@@ -1,9 +1,12 @@
 package com.InvestmentsTracker.investment_portfolio.service.etf;
 
+import com.InvestmentsTracker.investment_portfolio.dto.etf.EtfRequestDTO;
 import com.InvestmentsTracker.investment_portfolio.exception.EtfPriceRetrievalException;
+import com.InvestmentsTracker.investment_portfolio.exception.InvestmentException;
 import com.InvestmentsTracker.investment_portfolio.model.Etf;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Interface para serviços específicos de investimentos em ETFs.
@@ -11,53 +14,53 @@ import java.util.List;
 public interface EtfInvestmentService {
 
     /**
-     * Atualiza manualmente o valor de um investimento em ETF específico.
+     * Atualiza o preço de um ETF específico no investimento.
      *
      * @param investmentId ID do investimento em ETF.
-     * @param newValue Novo valor atual em EUR.
-     * @throws EtfPriceRetrievalException Se ocorrer um erro ao atualizar o valor.
+     * @return Preço atualizado em EUR.
+     * @throws InvestmentException Se ocorrer um erro ao recuperar o preço.
      */
-    void updateValue(Long investmentId, double newValue) throws EtfPriceRetrievalException;
+    double updatePrice(UUID investmentId) throws InvestmentException;
 
     /**
-     * Atualiza os valores de todos os investimentos em ETFs no portfólio do usuário.
+     * Atualiza os preços de todos os ETFs no portfólio do usuário.
      *
      * @param portfolioId ID do portfólio do usuário.
-     * @param newValue Novo valor atual a ser definido para cada ETF.
-     * @throws EtfPriceRetrievalException Se ocorrer um erro ao atualizar os valores.
+     * @throws EtfPriceRetrievalException Se ocorrer um erro ao recuperar o preço.
      */
-    void updateAllValues(Long portfolioId, double newValue) throws EtfPriceRetrievalException;
+    void updateAllPrices(UUID portfolioId) throws EtfPriceRetrievalException;
 
     /**
-     * Recupera o valor atual de um investimento em ETF.
+     * Calcula o valor atual de um ETF no investimento.
      *
      * @param investmentId ID do investimento em ETF.
      * @return Valor atual em EUR.
-     * @throws EtfPriceRetrievalException Se ocorrer um erro ao recuperar o valor.
+     * @throws InvestmentException Se ocorrer um erro ao recuperar o preço.
      */
-    double getCurrentValue(Long investmentId) throws EtfPriceRetrievalException;
+    double getCurrentValue(UUID investmentId) throws InvestmentException;
 
     /**
-     * Recupera todas as instâncias de ETFs associadas a um usuário específico.
+     * Recupera todas as Etfs associadas a um usuário.
      *
      * @param userId ID do usuário.
-     * @return Lista de investimentos em ETFs.
+     * @return Lista de Etfs.
      */
-    List<Etf> getAllEtfsByUser(Long userId);
+    List<Etf> getAllEtfsByUser(UUID userId);
 
     /**
-     * Adiciona um novo investimento em ETF.
+     * Adiciona uma nova Etf ao portfólio.
      *
-     * @param etf Instância de Etf a ser adicionada.
-     * @return Etf criado.
+     * @param etfRequestDTO DTO contendo os dados da Etf.
+     * @return Etf adicionada.
+     * @throws EtfPriceRetrievalException Se ocorrer um erro ao adicionar a Etf.
      */
-    Etf addEtf(Etf etf);
+    Etf addEtf(EtfRequestDTO etfRequestDTO) throws EtfPriceRetrievalException;
 
     /**
-     * Remove um investimento em ETF específico.
+     * Remove uma Etf específica do portfólio.
      *
-     * @param investmentId ID do investimento em ETF.
-     * @throws EtfPriceRetrievalException Se ocorrer um erro ao remover o ETF.
+     * @param etfId ID da Etf a ser removida.
+     * @throws EtfPriceRetrievalException Se ocorrer um erro ao remover a Etf.
      */
-    void removeEtf(Long investmentId) throws EtfPriceRetrievalException;
+    void removeEtf(UUID etfId) throws EtfPriceRetrievalException;
 }

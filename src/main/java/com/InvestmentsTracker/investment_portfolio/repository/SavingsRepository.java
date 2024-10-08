@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Repositório para operações CRUD na entidade Savings.
  */
 @Repository
-public interface SavingsRepository extends JpaRepository<Savings, Long> {
+public interface SavingsRepository extends JpaRepository<Savings, UUID> {
 
     /**
      * Busca todas as Savings associadas a um portfólio específico.
@@ -19,7 +20,7 @@ public interface SavingsRepository extends JpaRepository<Savings, Long> {
      * @param portfolioId ID do portfólio.
      * @return Lista de Savings.
      */
-    List<Savings> findByPortfolioId(Long portfolioId);
+    List<Savings> findByPortfolioId(UUID portfolioId);
 
     /**
      * Busca todas as Savings associadas a um usuário específico através do userId.
@@ -27,5 +28,5 @@ public interface SavingsRepository extends JpaRepository<Savings, Long> {
      * @param userId ID do usuário.
      * @return Lista de Savings.
      */
-    List<Savings> findByPortfolioUserId(Long userId);
+    List<Savings> findByPortfolioUserId(UUID userId);
 }

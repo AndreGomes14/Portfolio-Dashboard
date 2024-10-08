@@ -1,8 +1,8 @@
 package com.InvestmentsTracker.investment_portfolio.controller;
 
-import com.InvestmentsTracker.investment_portfolio.dto.AuthResponse;
-import com.InvestmentsTracker.investment_portfolio.dto.LoginRequest;
-import com.InvestmentsTracker.investment_portfolio.dto.RegisterRequest;
+import com.InvestmentsTracker.investment_portfolio.dto.auth.AuthResponse;
+import com.InvestmentsTracker.investment_portfolio.dto.auth.LoginRequest;
+import com.InvestmentsTracker.investment_portfolio.dto.auth.RegisterRequest;
 import com.InvestmentsTracker.investment_portfolio.exception.EmailAlreadyExistsException;
 import com.InvestmentsTracker.investment_portfolio.service.user.UserService;
 import jakarta.validation.Valid;

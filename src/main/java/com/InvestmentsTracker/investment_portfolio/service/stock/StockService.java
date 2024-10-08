@@ -17,6 +17,11 @@ public interface StockService {
     void updateStockValueFromApi(Stock stock) throws StockPriceRetrievalException;
 
     /**
-     * Outros métodos relacionados a operações de Stocks podem ser adicionados aqui.
+     * Obtém o preço atual de uma ação em EUR.
+     *
+     * @param ticker Ticker da ação (ex: "AAPL").
+     * @return Preço atual em EUR.
+     * @throws StockPriceRetrievalException Se ocorrer um erro ao recuperar o preço.
      */
+    double getStockPriceInEUR(String ticker) throws StockPriceRetrievalException;
 }

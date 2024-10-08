@@ -7,12 +7,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repositório para operações CRUD na entidade Other.
  */
 @Repository
-public interface OtherRepository extends JpaRepository<Other, Long> {
+public interface OtherRepository extends JpaRepository<Other, UUID> {
 
     /**
      * Busca um investimento "Other" pela descrição.
@@ -28,7 +29,7 @@ public interface OtherRepository extends JpaRepository<Other, Long> {
      * @param portfolioId ID do portfólio.
      * @return Lista de investimentos "Other".
      */
-    List<Other> findByPortfolioId(Long portfolioId);
+    List<Other> findByPortfolioId(UUID portfolioId);
 
     /**
      * Busca todos os investimentos "Other" associados a um usuário específico através do userId.
@@ -36,5 +37,5 @@ public interface OtherRepository extends JpaRepository<Other, Long> {
      * @param userId ID do usuário.
      * @return Lista de investimentos "Other".
      */
-    List<Other> findByPortfolioUserId(Long userId);
+    List<Other> findByPortfolioUserId(UUID userId);
 }

@@ -1,4 +1,4 @@
-package com.InvestmentsTracker.investment_portfolio.dto;
+package com.InvestmentsTracker.investment_portfolio.dto.auth;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -4,53 +4,98 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.util.Date;
+import java.util.UUID;
 
 @Getter
 @Setter
-@Entity // Make sure it's marked as a JPA entity
+@Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "investment_type")
+@Table(name = "investments")
 public abstract class Investment {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String investmentType;
+    @GeneratedValue // Utiliza a estratégia padrão para UUID
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
+    private UUID id;
+
+    @Column(name = "buy_price", nullable = false)
     private double buyPrice;
+
+    @Column(name = "units", nullable = false)
     private int units;
-    private LocalDate date;
+
+    @Column(name = "date", nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date date;
+
+    @Column(name = "risk_level", nullable = false)
     private int riskLevel;
+
+    @Column(name = "last_synced_price")
+    private double lastSyncedPrice;
+
     @Transient
     private double amountInvested;
 
-    @Setter
     @Transient
     private double currentValue;
 
-    @ManyToOne
-    @JoinColumn(name = "portfolio_id") // Foreign key to Portfolio table
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "portfolio_id") // Chave estrangeira para a tabela Portfolio
     private Portfolio portfolio;
+
+    /**
+     * Calcula o valor total investido.
+     *
+     * @return Valor total investido.
+     */
     public double calculateTotalValue() {
         return buyPrice * units;
     }
+
+    /**
+     * Obtém o valor investido.
+     *
+     * @return Valor investido.
+     */
     public double getAmountInvested() {
         return buyPrice * units;
     }
-    public abstract double getCurrentMarketPrice();
 
+    /**
+     * Obtém o valor atual do investimento no mercado.
+     *
+     * @return Valor atual no mercado.
+     */
     public double getCurrentValue() {
         return getCurrentMarketPrice();
     }
 
+    /**
+     * Método abstrato para obter o preço atual de mercado.
+     *
+     * @return Preço atual de mercado.
+     */
+    public abstract double getCurrentMarketPrice();
+
+    /**
+     * Método abstrato para obter o tipo de investimento.
+     *
+     * @return Tipo de investimento.
+     */
     @Transient
     public abstract String getInvestmentType();
+
     @Override
     public String toString() {
         return "Investment{" +
-                "name='" + investmentType + '\'' +
+                "id=" + id +
                 ", buyPrice=" + buyPrice +
-                ", units=" + units +
+                ", date=" + date +
+                ", riskLevel=" + riskLevel +
+                ", currentValue=" + currentValue +
+                ", portfolio=" + portfolio +
                 '}';
     }
-
 }

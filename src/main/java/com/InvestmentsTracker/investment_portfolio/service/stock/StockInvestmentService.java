@@ -1,9 +1,14 @@
+// src/main/java/com/InvestmentsTracker/investment_portfolio/service/stock/StockInvestmentService.java
+
 package com.InvestmentsTracker.investment_portfolio.service.stock;
 
+import com.InvestmentsTracker.investment_portfolio.dto.stock.StockRequestDTO;
+import com.InvestmentsTracker.investment_portfolio.exception.InvestmentException;
 import com.InvestmentsTracker.investment_portfolio.exception.StockPriceRetrievalException;
 import com.InvestmentsTracker.investment_portfolio.model.Stock;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Interface para serviços específicos de investimentos em Stocks.
@@ -11,52 +16,54 @@ import java.util.List;
 public interface StockInvestmentService {
 
     /**
-     * Atualiza manualmente o valor de um investimento em Stock específico.
+     * Atualiza o preço de uma ação específica.
      *
-     * @param investmentId ID do investimento em Stock.
-     * @throws StockPriceRetrievalException Se ocorrer um erro ao atualizar o valor.
+     * @param investmentId ID do investimento em ação.
+     * @return Preço atualizado em EUR.
+     * @throws StockPriceRetrievalException Se ocorrer um erro ao atualizar o preço.
      */
-    void updateValue(Long investmentId) throws StockPriceRetrievalException;
+    double updatePrice(UUID investmentId) throws StockPriceRetrievalException;
 
     /**
-     * Atualiza os valores de todos os investimentos em Stocks no portfólio do usuário.
+     * Atualiza os preços de todas as ações no portfólio do usuário.
      *
      * @param portfolioId ID do portfólio do usuário.
-     * @throws StockPriceRetrievalException Se ocorrer um erro ao atualizar os valores.
+     * @throws StockPriceRetrievalException Se ocorrer um erro ao atualizar os preços.
      */
-    void updateAllValues(Long portfolioId) throws StockPriceRetrievalException;
+    void updateAllPrices(UUID portfolioId) throws StockPriceRetrievalException;
 
     /**
-     * Recupera o valor atual de um investimento em Stock.
+     * Calcula o valor atual de uma ação no investimento.
      *
-     * @param investmentId ID do investimento em Stock.
+     * @param investmentId ID do investimento em ação.
      * @return Valor atual em EUR.
-     * @throws StockPriceRetrievalException Se ocorrer um erro ao recuperar o valor.
+     * @throws InvestmentException Se ocorrer um erro ao recuperar o valor.
      */
-    double getCurrentValue(Long investmentId) throws StockPriceRetrievalException;
+    double getCurrentValue(UUID investmentId) throws InvestmentException;
 
     /**
-     * Recupera todas as instâncias de Stocks associadas a um usuário específico.
+     * Recupera todas as ações associadas a um usuário.
      *
      * @param userId ID do usuário.
-     * @return Lista de investimentos em Stocks.
+     * @return Lista de ações.
      */
-    List<Stock> getAllStocksByUser(Long userId);
+    List<Stock> getAllStocksByUser(UUID userId);
 
     /**
-     * Adiciona um novo investimento em Stock e atualiza seu valor atual via API.
+     * Adiciona uma nova ação ao portfólio e atualiza seu valor atual via API.
      *
-     * @param stock Instância de Stock a ser adicionada.
-     * @return Stock criado com valor atualizado.
+     * @param stockRequestDTO DTO contendo os dados da ação.
+     * @return Ação adicionada com valor atualizado.
      * @throws StockPriceRetrievalException Se ocorrer um erro ao atualizar o valor.
+     * @throws InvestmentException Se ocorrer um erro relacionado ao investimento.
      */
-    Stock addStock(Stock stock) throws StockPriceRetrievalException;
+    Stock addStock(StockRequestDTO stockRequestDTO) throws StockPriceRetrievalException, InvestmentException;
 
     /**
-     * Remove um investimento em Stock específico.
+     * Remove uma ação específica do portfólio.
      *
-     * @param investmentId ID do investimento em Stock.
-     * @throws StockPriceRetrievalException Se ocorrer um erro ao remover o Stock.
+     * @param investmentId ID da ação a ser removida.
+     * @throws StockPriceRetrievalException Se ocorrer um erro ao remover a ação.
      */
-    void removeStock(Long investmentId) throws StockPriceRetrievalException;
+    void removeStock(UUID investmentId) throws StockPriceRetrievalException;
 }

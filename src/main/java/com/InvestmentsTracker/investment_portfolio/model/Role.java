@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     // Role name, e.g., "ROLE_USER", "ROLE_ADMIN"
     @Column(unique = true, nullable = false)

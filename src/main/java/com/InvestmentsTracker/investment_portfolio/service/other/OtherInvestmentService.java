@@ -1,9 +1,11 @@
 package com.InvestmentsTracker.investment_portfolio.service.other;
 
+import com.InvestmentsTracker.investment_portfolio.exception.InvestmentException;
 import com.InvestmentsTracker.investment_portfolio.exception.OtherPriceRetrievalException;
 import com.InvestmentsTracker.investment_portfolio.model.Other;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Interface para serviços específicos de investimentos em "Other".
@@ -17,7 +19,7 @@ public interface OtherInvestmentService {
      * @param newValue Novo valor atual em EUR.
      * @throws OtherPriceRetrievalException Se ocorrer um erro ao atualizar o valor.
      */
-    void updateValue(Long investmentId, double newValue) throws OtherPriceRetrievalException;
+    void updateValue(UUID investmentId, double newValue) throws OtherPriceRetrievalException;
 
     /**
      * Atualiza os valores de todos os investimentos em "Other" no portfólio do usuário.
@@ -26,16 +28,16 @@ public interface OtherInvestmentService {
      * @param newValue Novo valor atual a ser definido para cada "Other".
      * @throws OtherPriceRetrievalException Se ocorrer um erro ao atualizar os valores.
      */
-    void updateAllValues(Long portfolioId, double newValue) throws OtherPriceRetrievalException;
+    void updateAllValues(UUID portfolioId, double newValue) throws OtherPriceRetrievalException;
 
     /**
      * Recupera o valor atual de um investimento em "Other".
      *
      * @param investmentId ID do investimento em "Other".
      * @return Valor atual em EUR.
-     * @throws OtherPriceRetrievalException Se ocorrer um erro ao recuperar o valor.
+     * @throws InvestmentException Se ocorrer um erro ao recuperar o valor.
      */
-    double getCurrentValue(Long investmentId) throws OtherPriceRetrievalException;
+    double getCurrentValue(UUID investmentId) throws InvestmentException;
 
     /**
      * Recupera todas as instâncias de "Other" associadas a um usuário específico.
@@ -43,7 +45,7 @@ public interface OtherInvestmentService {
      * @param userId ID do usuário.
      * @return Lista de investimentos em "Other".
      */
-    List<Other> getAllOthersByUser(Long userId);
+    List<Other> getAllOthersByUser(UUID userId);
 
     /**
      * Adiciona um novo investimento em "Other".
@@ -59,5 +61,6 @@ public interface OtherInvestmentService {
      * @param investmentId ID do investimento em "Other".
      * @throws OtherPriceRetrievalException Se ocorrer um erro ao remover o "Other".
      */
-    void removeOther(Long investmentId) throws OtherPriceRetrievalException;
+    void removeOther(UUID investmentId) throws OtherPriceRetrievalException;
+
 }

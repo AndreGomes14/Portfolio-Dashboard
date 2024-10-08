@@ -1,14 +1,9 @@
-// src/main/java/com/InvestmentsTracker/investment_portfolio/exception/EtfPriceRetrievalException.java
 package com.InvestmentsTracker.investment_portfolio.exception;
 
 /**
- * Exceção personalizada para erros ao recuperar ou atualizar preços de ETFs.
+ * Exceção personalizada para erros na recuperação de preços de Etfs.
  */
-public class EtfPriceRetrievalException extends Exception {
-
-    public EtfPriceRetrievalException() {
-        super();
-    }
+public class EtfPriceRetrievalException extends InvestmentException {
 
     public EtfPriceRetrievalException(String message) {
         super(message);
@@ -16,9 +11,5 @@ public class EtfPriceRetrievalException extends Exception {
 
     public EtfPriceRetrievalException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public EtfPriceRetrievalException(Throwable cause) {
-        super(cause);
     }
 }

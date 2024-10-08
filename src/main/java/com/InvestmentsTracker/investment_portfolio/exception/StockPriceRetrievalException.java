@@ -4,15 +4,7 @@ package com.InvestmentsTracker.investment_portfolio.exception;
 /**
  * Exceção personalizada para erros ao recuperar preços de ações.
  */
-public class StockPriceRetrievalException extends RuntimeException {
-
-    /**
-     * Construtor padrão.
-     */
-    public StockPriceRetrievalException() {
-        super();
-    }
-
+public class StockPriceRetrievalException extends InvestmentException {
     /**
      * Construtor com mensagem.
      *
@@ -37,7 +29,4 @@ public class StockPriceRetrievalException extends RuntimeException {
      *
      * @param cause Causa subjacente do erro.
      */
-    public StockPriceRetrievalException(Throwable cause) {
-        super(cause);
-    }
 }

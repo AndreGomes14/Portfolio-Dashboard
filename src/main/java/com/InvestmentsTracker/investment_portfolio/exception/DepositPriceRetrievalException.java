@@ -3,10 +3,7 @@ package com.InvestmentsTracker.investment_portfolio.exception;
 /**
  * Exceção personalizada para erros ao recuperar ou calcular preços de Savings.
  */
-public class DepositPriceRetrievalException extends Exception {
-    public DepositPriceRetrievalException() {
-        super();
-    }
+public class DepositPriceRetrievalException extends InvestmentException {
 
     public DepositPriceRetrievalException(String message) {
         super(message);
@@ -16,7 +13,4 @@ public class DepositPriceRetrievalException extends Exception {
         super(message, cause);
     }
 
-    public DepositPriceRetrievalException(Throwable cause) {
-        super(cause);
-    }
 }

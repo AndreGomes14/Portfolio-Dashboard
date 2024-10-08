@@ -5,35 +5,24 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
-/**
- * Repositório para operações CRUD na entidade Etf.
- */
 @Repository
-public interface EtfRepository extends JpaRepository<Etf, Long> {
+public interface EtfRepository extends JpaRepository<Etf, UUID> {
 
     /**
-     * Busca um ETF pelo nome do fundo.
-     *
-     * @param fundName Nome do fundo.
-     * @return Optional contendo o ETF encontrado ou vazio caso contrário.
-     */
-    Optional<Etf> findByFundName(String fundName);
-
-    /**
-     * Busca todos os ETFs associados a um portfólio específico.
+     * Encontra Etfs pelo ID do portfólio.
      *
      * @param portfolioId ID do portfólio.
-     * @return Lista de ETFs.
+     * @return Lista de Etfs.
      */
-    List<Etf> findByPortfolioId(Long portfolioId);
+    List<Etf> findByPortfolioId(UUID portfolioId);
 
     /**
-     * Busca todos os ETFs associados a um usuário específico através do userId.
+     * Encontra Etfs pelo ID do usuário.
      *
      * @param userId ID do usuário.
-     * @return Lista de ETFs.
+     * @return Lista de Etfs.
      */
-    List<Etf> findByPortfolioUserId(Long userId);
+    List<Etf> findByPortfolioUserId(UUID userId);
 }

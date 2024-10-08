@@ -1,131 +1,82 @@
 package com.InvestmentsTracker.investment_portfolio.controller;
 
+import com.InvestmentsTracker.investment_portfolio.dto.stock.StockRequestDTO;
+import com.InvestmentsTracker.investment_portfolio.dto.stock.StockResponseDTO;
+import com.InvestmentsTracker.investment_portfolio.exception.InvestmentException;
 import com.InvestmentsTracker.investment_portfolio.exception.StockPriceRetrievalException;
+import com.InvestmentsTracker.investment_portfolio.mapper.StockMapper;
 import com.InvestmentsTracker.investment_portfolio.model.Stock;
 import com.InvestmentsTracker.investment_portfolio.service.stock.StockInvestmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
-/**
- * Controlador para gerenciar investimentos em Stocks.
- */
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/api/investments/stock")
-public class StockInvestmentController {
+@RequestMapping("/api/stocks")
+@Slf4j
+@RequiredArgsConstructor
+public class StockInvestmentController extends InvestmentController {
 
     private final StockInvestmentService stockInvestmentService;
-
-    @Autowired
-    public StockInvestmentController(StockInvestmentService stockInvestmentService) {
-        this.stockInvestmentService = stockInvestmentService;
-    }
+    private final StockMapper stockMapper;
 
     /**
-     * Endpoint para atualizar automaticamente o valor de um Stock específico via API.
+     * Atualiza o preço de uma ação específica.
      *
-     * @param investmentId ID do investimento em Stock.
-     * @return Mensagem de sucesso ou erro.
+     * @param investmentId ID da ação.
+     * @return Preço atualizado.
+     * @throws StockPriceRetrievalException Se ocorrer um erro ao atualizar o preço.
      */
-    @PutMapping("/{investmentId}/update-value")
-    public ResponseEntity<String> updateStockValue(@PathVariable Long investmentId) {
-        try {
-            stockInvestmentService.updateValue(investmentId);
-            return ResponseEntity.ok("Valor atualizado com sucesso.");
-        } catch (StockPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @PutMapping("/{investmentId}/update-price")
+    public ResponseEntity<Double> updatePrice(@PathVariable UUID investmentId) throws StockPriceRetrievalException {
+        double updatedPrice = stockInvestmentService.updatePrice(investmentId);
+        return ResponseEntity.ok(updatedPrice);
     }
 
     /**
-     * Endpoint para atualizar automaticamente o valor de todos os Stocks em um portfólio via API.
+     * Calcula o valor atual de uma ação específica.
      *
-     * @param portfolioId ID do portfólio do usuário.
-     * @return Mensagem de sucesso ou erro.
-     */
-    @PutMapping("/portfolio/{portfolioId}/update-all-values")
-    public ResponseEntity<String> updateAllStockValues(@PathVariable Long portfolioId) {
-        try {
-            stockInvestmentService.updateAllValues(portfolioId);
-            return ResponseEntity.ok("Todos os valores dos Stocks foram atualizados com sucesso.");
-        } catch (StockPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    /**
-     * Endpoint para obter o valor atual de um Stock específico.
-     *
-     * @param investmentId ID do investimento em Stock.
-     * @return Valor atual em EUR ou erro.
+     * @param investmentId ID da ação.
+     * @return Valor atual.
+     * @throws InvestmentException Se ocorrer um erro ao calcular o valor.
      */
     @GetMapping("/{investmentId}/current-value")
-    public ResponseEntity<Double> getCurrentValue(@PathVariable Long investmentId) {
-        try {
-            double currentValue = stockInvestmentService.getCurrentValue(investmentId);
-            return ResponseEntity.ok(currentValue);
-        } catch (StockPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<Double> getCurrentValue(@PathVariable UUID investmentId) throws InvestmentException {
+        double currentValue = stockInvestmentService.getCurrentValue(investmentId);
+        return ResponseEntity.ok(currentValue);
     }
 
     /**
-     * Endpoint para obter todos os Stocks de um usuário específico.
+     * Adiciona uma nova ação.
      *
-     * @param userId ID do usuário.
-     * @return Lista de Stocks ou erro.
-     */
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Stock>> getAllStocksByUser(@PathVariable Long userId) {
-        List<Stock> stockList = stockInvestmentService.getAllStocksByUser(userId);
-        return ResponseEntity.ok(stockList);
-    }
-
-    /**
-     * Endpoint para adicionar um novo Stock. O valor atual será atualizado automaticamente via API.
-     *
-     * @param stock Objeto Stock a ser adicionado.
-     * @return Stock criado ou erro.
+     * @param stockRequestDTO DTO de requisição.
+     * @return DTO de resposta da ação criada.
+     * @throws StockPriceRetrievalException Se ocorrer um erro ao adicionar a ação.
+     * @throws InvestmentException Se ocorrer um erro de investimento.
      */
     @PostMapping("/add")
-    public ResponseEntity<?> addStock(@RequestBody Stock stock) {
-        // Validações básicas
-        if (stock.getTicker() == null || stock.getTicker().isEmpty()) {
-            return ResponseEntity.badRequest().body("O ticker da ação é obrigatório.");
-        }
-        if (stock.getBuyPrice() <= 0) {
-            return ResponseEntity.badRequest().body("O preço de compra deve ser maior que zero.");
-        }
-        if (stock.getUnits() <= 0) {
-            return ResponseEntity.badRequest().body("O número de unidades deve ser maior que zero.");
-        }
-        try {
-            Stock savedStock = stockInvestmentService.addStock(stock);
-            return ResponseEntity.ok(savedStock);
-        } catch (StockPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Erro ao adicionar Stock.");
-        }
+    public ResponseEntity<StockResponseDTO> addStock(@Valid @RequestBody StockRequestDTO stockRequestDTO) throws StockPriceRetrievalException, InvestmentException {
+        Stock savedStock = stockInvestmentService.addStock(stockRequestDTO);
+        StockResponseDTO responseDTO = stockMapper.toDTO(savedStock);
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
     /**
-     * Endpoint para remover um Stock específico.
+     * Remove uma ação específica.
      *
-     * @param investmentId ID do investimento em Stock.
-     * @return Mensagem de sucesso ou erro.
+     * @param investmentId ID da ação a ser removida.
+     * @return Resposta sem conteúdo.
+     * @throws StockPriceRetrievalException Se ocorrer um erro ao remover a ação.
      */
     @DeleteMapping("/{investmentId}/remove")
-    public ResponseEntity<String> removeStock(@PathVariable Long investmentId) {
-        try {
-            stockInvestmentService.removeStock(investmentId);
-            return ResponseEntity.ok("Stock removido com sucesso.");
-        } catch (StockPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Erro ao remover Stock.");
-        }
+    public ResponseEntity<Void> removeStock(@PathVariable UUID investmentId) throws StockPriceRetrievalException {
+        stockInvestmentService.removeStock(investmentId);
+        return ResponseEntity.noContent().build();
     }
 }

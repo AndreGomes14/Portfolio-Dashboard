@@ -1,27 +1,51 @@
 package com.InvestmentsTracker.investment_portfolio.model;
 
-import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+
+import java.util.UUID;
 
 @Getter
 @Setter
-@Slf4j
-@DiscriminatorValue("STOCK")
+@Entity
+@Table(name = "stocks")
 public class Stock extends Investment {
 
-    String ticker;
-    Double divideYield;
-    String exchange;
+    @Column(name = "ticker", nullable = false, unique = true)
+    @NotBlank(message = "Ticker não pode ser vazio.")
+    private String ticker;
+
+    @Column(name = "units", nullable = false)
+    @Positive(message = "Units deve ser positivo.")
+    private double units;
+
+    @Column(name = "last_synced_price")
+    private double lastSyncedPrice;
+
     @Override
     public double getCurrentMarketPrice() {
-        return 0;
+        return lastSyncedPrice;
     }
 
     @Override
     public String getInvestmentType() {
-        return "STOCK";
+        return "Stock";
     }
 
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "id=" + getId() +
+                ", ticker='" + ticker + '\'' +
+                ", units=" + units +
+                ", buyPrice=" + getBuyPrice() +
+                ", date=" + getDate() +
+                ", riskLevel=" + getRiskLevel() +
+                ", lastSyncedPrice=" + lastSyncedPrice +
+                ", currentValue=" + getCurrentValue() +
+                '}';
+    }
 }

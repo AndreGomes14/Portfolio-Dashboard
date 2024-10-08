@@ -1,4 +1,4 @@
-package com.InvestmentsTracker.investment_portfolio.dto;
+package com.InvestmentsTracker.investment_portfolio.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

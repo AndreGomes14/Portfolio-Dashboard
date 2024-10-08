@@ -1,4 +1,3 @@
-// src/main/java/com/InvestmentsTracker/investment_portfolio/repository/CryptoRepository.java
 package com.InvestmentsTracker.investment_portfolio.repository;
 
 import com.InvestmentsTracker.investment_portfolio.model.Crypto;
@@ -6,35 +5,24 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
-/**
- * Repositório para operações CRUD na entidade Crypto.
- */
 @Repository
-public interface CryptoRepository extends JpaRepository<Crypto, Long> {
+public interface CryptoRepository extends JpaRepository<Crypto, UUID> {
 
     /**
-     * Busca uma criptomoeda pelo seu coinId.
+     * Encontra criptomoedas pelo ID do portfólio.
      *
-     * @param coinId ID da criptomoeda (ex: "bitcoin", "ethereum")
-     * @return Optional contendo a Crypto encontrada ou vazia caso contrário.
-     */
-    Optional<Crypto> findByCoinId(String coinId);
-
-    /**
-     * Busca todas as criptomoedas associadas a um usuário através do portfolioId.
-     *
-     * @param portfolioId ID do portfólio do usuário.
+     * @param portfolioId ID do portfólio.
      * @return Lista de criptomoedas.
      */
-    List<Crypto> findByPortfolioId(Long portfolioId);
+    List<Crypto> findByPortfolioId(UUID portfolioId);
 
     /**
-     * Busca todas as criptomoedas associadas a um usuário através do userId.
+     * Encontra criptomoedas pelo ID do usuário.
      *
      * @param userId ID do usuário.
      * @return Lista de criptomoedas.
      */
-    List<Crypto> findByPortfolioUserId(Long userId);
+    List<Crypto> findByPortfolioUserId(UUID userId);
 }

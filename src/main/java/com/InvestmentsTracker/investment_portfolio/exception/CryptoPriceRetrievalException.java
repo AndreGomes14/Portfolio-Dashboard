@@ -1,13 +1,6 @@
 package com.InvestmentsTracker.investment_portfolio.exception;
 
-public class CryptoPriceRetrievalException extends RuntimeException {
-
-    /**
-     * Construtor padrão.
-     */
-    public CryptoPriceRetrievalException() {
-        super();
-    }
+public class CryptoPriceRetrievalException extends InvestmentException {
 
     /**
      * Construtor com mensagem.
@@ -33,7 +26,4 @@ public class CryptoPriceRetrievalException extends RuntimeException {
      *
      * @param cause Causa subjacente do erro.
      */
-    public CryptoPriceRetrievalException(Throwable cause) {
-        super(cause);
-    }
 }

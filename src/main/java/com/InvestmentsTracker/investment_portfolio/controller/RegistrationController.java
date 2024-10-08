@@ -1,7 +1,7 @@
 // src/main/java/com/InvestmentsTracker/investment_portfolio/controller/RegistrationController.java
 package com.InvestmentsTracker.investment_portfolio.controller;
 
-import com.InvestmentsTracker.investment_portfolio.dto.RegisterRequest;
+import com.InvestmentsTracker.investment_portfolio.dto.auth.RegisterRequest;
 import com.InvestmentsTracker.investment_portfolio.exception.DuplicateUserException;
 import com.InvestmentsTracker.investment_portfolio.exception.InvalidInputException;
 import com.InvestmentsTracker.investment_portfolio.service.user.UserService;

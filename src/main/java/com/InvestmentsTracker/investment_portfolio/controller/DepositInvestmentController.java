@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Controlador para gerenciar investimentos em Savings (Depósitos).
@@ -32,7 +33,7 @@ public class DepositInvestmentController {
      */
     @PutMapping("/{investmentId}/update-value")
     public ResponseEntity<String> updateSavingsValue(
-            @PathVariable Long investmentId,
+            @PathVariable UUID investmentId,
             @RequestParam double newValue) {
         try {
             depositInvestmentService.updateValue(investmentId, newValue);
@@ -51,7 +52,7 @@ public class DepositInvestmentController {
      */
     @PutMapping("/portfolio/{portfolioId}/update-all-values")
     public ResponseEntity<String> updateAllSavingsValues(
-            @PathVariable Long portfolioId,
+            @PathVariable UUID portfolioId,
             @RequestParam double newValue) {
         try {
             depositInvestmentService.updateAllValues(portfolioId, newValue);
@@ -68,7 +69,7 @@ public class DepositInvestmentController {
      * @return Valor atual em EUR ou erro.
      */
     @GetMapping("/{investmentId}/current-value")
-    public ResponseEntity<Double> getCurrentValue(@PathVariable Long investmentId) {
+    public ResponseEntity<Double> getCurrentValue(@PathVariable UUID investmentId) {
         try {
             double currentValue = depositInvestmentService.getCurrentValue(investmentId);
             return ResponseEntity.ok(currentValue);
@@ -84,7 +85,7 @@ public class DepositInvestmentController {
      * @return Lista de Savings ou erro.
      */
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Savings>> getAllSavingsByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<Savings>> getAllSavingsByUser(@PathVariable UUID userId) {
         List<Savings> savingsList = depositInvestmentService.getAllDepositsByUser(userId);
         return ResponseEntity.ok(savingsList);
     }
@@ -108,7 +109,7 @@ public class DepositInvestmentController {
      * @return Mensagem de sucesso ou erro.
      */
     @DeleteMapping("/{investmentId}/remove")
-    public ResponseEntity<String> removeSavings(@PathVariable Long investmentId) {
+    public ResponseEntity<String> removeSavings(@PathVariable UUID investmentId) {
         try {
             depositInvestmentService.removeSavings(investmentId);
             return ResponseEntity.ok("Savings removido com sucesso.");

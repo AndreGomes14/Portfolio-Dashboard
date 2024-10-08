@@ -1,125 +1,94 @@
 package com.InvestmentsTracker.investment_portfolio.controller;
 
+import com.InvestmentsTracker.investment_portfolio.dto.other.OtherRequestDTO;
+import com.InvestmentsTracker.investment_portfolio.dto.other.OtherResponseDTO;
 import com.InvestmentsTracker.investment_portfolio.exception.OtherPriceRetrievalException;
+import com.InvestmentsTracker.investment_portfolio.mapper.InvestmentMapper;
 import com.InvestmentsTracker.investment_portfolio.model.Other;
+import com.InvestmentsTracker.investment_portfolio.service.investment.InvestmentService;
 import com.InvestmentsTracker.investment_portfolio.service.other.OtherInvestmentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.InvestmentsTracker.investment_portfolio.mapper.OtherMapper;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.UUID;
 
 /**
- * Controlador para gerenciar investimentos em "Other".
+ * Controlador específico para gerenciar investimentos do tipo "Other".
  */
 @RestController
 @RequestMapping("/api/investments/other")
-public class OtherInvestmentController {
+@Slf4j
+public class OtherInvestmentController extends InvestmentController {
 
     private final OtherInvestmentService otherInvestmentService;
+    private final OtherMapper otherMapper;
 
-    @Autowired
-    public OtherInvestmentController(OtherInvestmentService otherInvestmentService) {
+    public OtherInvestmentController(InvestmentService investmentService,
+                                     InvestmentMapper investmentMapper,
+                                     OtherInvestmentService otherInvestmentService,
+                                     OtherMapper otherMapper) {
+        super(investmentService, investmentMapper);
         this.otherInvestmentService = otherInvestmentService;
+        this.otherMapper = otherMapper;
     }
 
     /**
-     * Endpoint para atualizar manualmente o valor de um investimento "Other" específico.
+     * Adiciona um novo investimento do tipo "Other".
      *
-     * @param investmentId ID do investimento em "Other".
+     * @param otherRequestDTO DTO contendo os dados do investimento "Other".
+     * @return Investimento "Other" adicionado.
+     * @throws OtherPriceRetrievalException Se ocorrer um erro ao adicionar o investimento.
+     */
+    @PostMapping
+    public ResponseEntity<OtherResponseDTO> addOther(@RequestBody OtherRequestDTO otherRequestDTO) throws OtherPriceRetrievalException {
+        Other other = otherMapper.toEntity(otherRequestDTO);
+        Other savedOther = otherInvestmentService.addOther(other);
+        OtherResponseDTO responseDTO = otherMapper.toDTO(savedOther);
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
+    }
+
+    /**
+     * Atualiza manualmente o valor de um investimento "Other" específico.
+     *
+     * @param investmentId ID do investimento "Other".
      * @param newValue Novo valor atual em EUR.
-     * @return Mensagem de sucesso ou erro.
+     * @return Resposta vazia com status 200.
+     * @throws OtherPriceRetrievalException Se ocorrer um erro ao atualizar o valor.
      */
     @PutMapping("/{investmentId}/update-value")
-    public ResponseEntity<String> updateOtherValue(
-            @PathVariable Long investmentId,
-            @RequestParam double newValue) {
-        try {
-            otherInvestmentService.updateValue(investmentId, newValue);
-            return ResponseEntity.ok("Valor atualizado com sucesso.");
-        } catch (OtherPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Void> updateOtherValue(@PathVariable UUID investmentId, @RequestParam double newValue) throws OtherPriceRetrievalException {
+        otherInvestmentService.updateValue(investmentId, newValue);
+        return ResponseEntity.ok().build();
     }
 
     /**
-     * Endpoint para atualizar manualmente o valor de todos os investimentos "Other" em um portfólio.
+     * Remove um investimento "Other" específico.
      *
-     * @param portfolioId ID do portfólio do usuário.
-     * @param newValue Novo valor atual a ser definido para cada "Other".
-     * @return Mensagem de sucesso ou erro.
+     * @param investmentId ID do investimento "Other".
+     * @return Resposta vazia com status 204.
+     * @throws OtherPriceRetrievalException Se ocorrer um erro ao remover o investimento.
      */
-    @PutMapping("/portfolio/{portfolioId}/update-all-values")
-    public ResponseEntity<String> updateAllOtherValues(
-            @PathVariable Long portfolioId,
-            @RequestParam double newValue) {
-        try {
-            otherInvestmentService.updateAllValues(portfolioId, newValue);
-            return ResponseEntity.ok("Todos os valores dos investimentos 'Other' foram atualizados com sucesso.");
-        } catch (OtherPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @DeleteMapping("/{investmentId}")
+    @Override
+    public ResponseEntity<Void> removeInvestment(@PathVariable UUID investmentId) throws OtherPriceRetrievalException {
+        otherInvestmentService.removeOther(investmentId);
+        return ResponseEntity.noContent().build();
     }
 
     /**
-     * Endpoint para obter o valor atual de um investimento "Other" específico.
+     * Recupera o valor atual de um investimento "Other" específico.
      *
-     * @param investmentId ID do investimento em "Other".
-     * @return Valor atual em EUR ou erro.
+     * @param investmentId ID do investimento "Other".
+     * @return Valor atual em EUR.
+     * @throws OtherPriceRetrievalException Se ocorrer um erro ao recuperar o valor.
      */
     @GetMapping("/{investmentId}/current-value")
-    public ResponseEntity<Double> getCurrentValue(@PathVariable Long investmentId) {
-        try {
-            double currentValue = otherInvestmentService.getCurrentValue(investmentId);
-            return ResponseEntity.ok(currentValue);
-        } catch (OtherPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    /**
-     * Endpoint para obter todos os investimentos "Other" de um usuário específico.
-     *
-     * @param userId ID do usuário.
-     * @return Lista de investimentos "Other" ou erro.
-     */
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Other>> getAllOthersByUser(@PathVariable Long userId) {
-        List<Other> otherList = otherInvestmentService.getAllOthersByUser(userId);
-        return ResponseEntity.ok(otherList);
-    }
-
-    /**
-     * Endpoint para adicionar um novo investimento "Other".
-     *
-     * @param other Objeto Other a ser adicionado.
-     * @return Other criado ou erro.
-     */
-    @PostMapping("/add")
-    public ResponseEntity<Other> addOther(@RequestBody Other other) {
-        try {
-            Other savedOther = otherInvestmentService.addOther(other);
-            return ResponseEntity.ok(savedOther);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(null);
-        }
-    }
-
-    /**
-     * Endpoint para remover um investimento "Other" específico.
-     *
-     * @param investmentId ID do investimento em "Other".
-     * @return Mensagem de sucesso ou erro.
-     */
-    @DeleteMapping("/{investmentId}/remove")
-    public ResponseEntity<String> removeOther(@PathVariable Long investmentId) {
-        try {
-            otherInvestmentService.removeOther(investmentId);
-            return ResponseEntity.ok("Investimento 'Other' removido com sucesso.");
-        } catch (OtherPriceRetrievalException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Erro ao remover investimento 'Other'.");
-        }
+    @Override
+    public ResponseEntity<Double> getCurrentValue(@PathVariable UUID investmentId) throws OtherPriceRetrievalException {
+        double currentValue = otherInvestmentService.getCurrentValue(investmentId);
+        return ResponseEntity.ok(currentValue);
     }
 }

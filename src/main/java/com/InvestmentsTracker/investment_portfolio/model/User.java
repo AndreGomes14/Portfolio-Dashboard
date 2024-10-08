@@ -25,19 +25,17 @@ public class User implements UserDetails {
     private Portfolio portfolio;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
-    // User's login credentials
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "Username is required")
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Password is required")
-    private String password; // Ensure this is stored securely (hashed)
+    @Column(name = "password", nullable = false)
+    private String password;
 
-    @Email(message = "Please provide a valid email")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     private boolean enabled = true;

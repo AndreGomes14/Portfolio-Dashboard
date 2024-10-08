@@ -1,13 +1,16 @@
 package com.InvestmentsTracker.investment_portfolio.service.other;
 
+import com.InvestmentsTracker.investment_portfolio.exception.InvestmentException;
 import com.InvestmentsTracker.investment_portfolio.exception.OtherPriceRetrievalException;
 import com.InvestmentsTracker.investment_portfolio.model.Other;
+import com.InvestmentsTracker.investment_portfolio.repository.InvestmentRepository;
 import com.InvestmentsTracker.investment_portfolio.repository.OtherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Implementação do serviço específico para investimentos em "Other".
@@ -23,6 +26,7 @@ public class OtherInvestmentServiceImpl implements OtherInvestmentService {
     public OtherInvestmentServiceImpl(OtherService otherService, OtherRepository otherRepository) {
         this.otherService = otherService;
         this.otherRepository = otherRepository;
+
     }
 
     /**
@@ -33,7 +37,7 @@ public class OtherInvestmentServiceImpl implements OtherInvestmentService {
      * @throws OtherPriceRetrievalException Se ocorrer um erro ao atualizar o valor.
      */
     @Override
-    public void updateValue(Long investmentId, double newValue) throws OtherPriceRetrievalException {
+    public void updateValue(UUID investmentId, double newValue) throws OtherPriceRetrievalException {
         Other other = otherRepository.findById(investmentId)
                 .orElseThrow(() -> new OtherPriceRetrievalException("Investimento 'Other' não encontrado com ID: " + investmentId));
 
@@ -51,7 +55,7 @@ public class OtherInvestmentServiceImpl implements OtherInvestmentService {
      * @throws OtherPriceRetrievalException Se ocorrer um erro ao atualizar os valores.
      */
     @Override
-    public void updateAllValues(Long portfolioId, double newValue) throws OtherPriceRetrievalException {
+    public void updateAllValues(UUID portfolioId, double newValue) throws OtherPriceRetrievalException {
         List<Other> otherList = otherRepository.findByPortfolioId(portfolioId);
         for (Other other : otherList) {
             try {
@@ -73,12 +77,15 @@ public class OtherInvestmentServiceImpl implements OtherInvestmentService {
      * @throws OtherPriceRetrievalException Se ocorrer um erro ao recuperar o valor.
      */
     @Override
-    public double getCurrentValue(Long investmentId) throws OtherPriceRetrievalException {
+    public double getCurrentValue(UUID investmentId) throws InvestmentException {
         Other other = otherRepository.findById(investmentId)
-                .orElseThrow(() -> new OtherPriceRetrievalException("Investimento 'Other' não encontrado com ID: " + investmentId));
+                .orElseThrow(() -> new InvestmentException("Investment 'Other' não encontrado com ID: " + investmentId));
 
-        double currentValue = other.getCurrentValue();
-        log.info("Valor atual para Investimento 'Other' '{}' (ID: {}): {} EUR", other.getDescription(), investmentId, currentValue);
+        double currentValue = otherService.calculateCurrentValue(other);
+        other.setCurrentValue(currentValue);
+        otherRepository.save(other);
+
+        log.info("Valor atual para Investment 'Other' '{}' (ID: {}): {} EUR", other.getDescription(), investmentId, currentValue);
         return currentValue;
     }
 
@@ -89,7 +96,7 @@ public class OtherInvestmentServiceImpl implements OtherInvestmentService {
      * @return Lista de investimentos em "Other".
      */
     @Override
-    public List<Other> getAllOthersByUser(Long userId) {
+    public List<Other> getAllOthersByUser(UUID userId) {
         List<Other> otherList = otherRepository.findByPortfolioUserId(userId);
         log.info("Encontrados {} investimentos 'Other' para o usuário ID: {}", otherList.size(), userId);
         return otherList;
@@ -115,11 +122,12 @@ public class OtherInvestmentServiceImpl implements OtherInvestmentService {
      * @throws OtherPriceRetrievalException Se ocorrer um erro ao remover o "Other".
      */
     @Override
-    public void removeOther(Long investmentId) throws OtherPriceRetrievalException {
+    public void removeOther(UUID investmentId) throws OtherPriceRetrievalException {
         Other other = otherRepository.findById(investmentId)
                 .orElseThrow(() -> new OtherPriceRetrievalException("Investimento 'Other' não encontrado com ID: " + investmentId));
 
         otherRepository.delete(other);
         log.info("Investimento 'Other' removido: '{}', ID: {}", other.getDescription(), investmentId);
     }
+
 }

@@ -13,6 +13,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/portfolio")
 public class PortfolioController {
@@ -25,7 +27,7 @@ public class PortfolioController {
     @GetMapping
     public ResponseEntity<?> getPortfolio(@AuthenticationPrincipal User user) {
         try {
-            Long userId = user.getId();
+            UUID userId = user.getId();
             logger.info("Solicitação para obter o portfólio do usuário com ID: {}", userId);
             PortfolioDTO portfolioDTO = portfolioService.getPortfolioByUserId(userId);
             logger.debug("Portfólio encontrado: {}", portfolioDTO);
@@ -43,7 +45,7 @@ public class PortfolioController {
     public ResponseEntity<?> createPortfolio(@AuthenticationPrincipal User user,
                                              @RequestBody PortfolioDTO portfolioDTO) {
         try {
-            Long userId = user.getId();
+            UUID userId = user.getId();
             logger.info("Solicitação para criar um novo portfólio para o usuário com ID: {}", userId);
             PortfolioDTO createdPortfolio = portfolioService.createPortfolio(userId, portfolioDTO);
             logger.debug("Portfólio criado: {}", createdPortfolio);
